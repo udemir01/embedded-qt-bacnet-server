@@ -6,7 +6,8 @@ BacnetWidget::BacnetWidget(QWidget *parent)
 	, ui(new Ui::BacnetWidget)
 {
 	ui->setupUi(this);
-	this->show();
+	this->setFixedWidth(418);
+	this->setFixedHeight(363);
 
 	BACNET_ADDRESS src = {}; /* address where message came from */
 	uint16_t pdu_len = 0;
@@ -14,8 +15,6 @@ BacnetWidget::BacnetWidget(QWidget *parent)
 	uint32_t elapsed_milliseconds = 0;
 	uint32_t elapsed_seconds = 0;
 	BACNET_CHARACTER_STRING DeviceName;
-
-	int present_value;
 
 #if defined(BACNET_TIME_MASTER)
 	BACNET_DATE_TIME bdatetime;
@@ -75,75 +74,68 @@ BacnetWidget::BacnetWidget(QWidget *parent)
 	atexit(datalink_cleanup);
 	/* broadcast an I-Am on startup */
 	Send_I_Am(&Handler_Transmit_Buffer[0]);
-	/* loop forever */
-	for (;;) {
-		/* input */
-		pdu_len = datalink_receive(&src, &Rx_Buf[0], MAX_MPDU, timeout);
 
-		/* process */
-		if (pdu_len) {
-			npdu_handler(&src, &Rx_Buf[0], pdu_len);
-		}
-		if (mstimer_expired(&BACnet_Task_Timer)) {
-			mstimer_reset(&BACnet_Task_Timer);
-			elapsed_milliseconds = mstimer_interval(&BACnet_Task_Timer);
-			elapsed_seconds = elapsed_milliseconds/1000;
-			/* 1 second tasks */
-			dcc_timer_seconds(elapsed_seconds);
-			datalink_maintenance_timer(elapsed_seconds);
-			dlenv_maintenance_timer(elapsed_seconds);
-			handler_cov_timer_seconds(elapsed_seconds);
-			Load_Control_State_Machine_Handler();
-			trend_log_timer(elapsed_seconds);
+	/* input */
+	pdu_len = datalink_receive(&src, &Rx_Buf[0], MAX_MPDU, timeout);
+
+	/* process */
+	if (pdu_len) {
+		npdu_handler(&src, &Rx_Buf[0], pdu_len);
+	}
+	if (mstimer_expired(&BACnet_Task_Timer)) {
+		mstimer_reset(&BACnet_Task_Timer);
+		elapsed_milliseconds = mstimer_interval(&BACnet_Task_Timer);
+		elapsed_seconds = elapsed_milliseconds/1000;
+		/* 1 second tasks */
+		dcc_timer_seconds(elapsed_seconds);
+		datalink_maintenance_timer(elapsed_seconds);
+		dlenv_maintenance_timer(elapsed_seconds);
+		handler_cov_timer_seconds(elapsed_seconds);
+		Load_Control_State_Machine_Handler();
+		trend_log_timer(elapsed_seconds);
 
 #if defined(INTRINSIC_REPORTING)
-			Device_local_reporting();
+		Device_local_reporting();
 #endif
 #if defined(BACNET_TIME_MASTER)
-			Device_getCurrentDateTime(&bdatetime);
-			handler_timesync_task(&bdatetime);
+		Device_getCurrentDateTime(&bdatetime);
+		handler_timesync_task(&bdatetime);
 #endif
-		}
-		if (mstimer_expired(&BACnet_TSM_Timer)) {
-			mstimer_reset(&BACnet_TSM_Timer);
-			elapsed_milliseconds = mstimer_interval(&BACnet_TSM_Timer);
-			tsm_timer_milliseconds(elapsed_milliseconds);
-		}
-		if (mstimer_expired(&BACnet_Address_Timer)) {
-			mstimer_reset(&BACnet_Address_Timer);
-			elapsed_milliseconds = mstimer_interval(&BACnet_Address_Timer);
-			elapsed_seconds = elapsed_milliseconds/1000;
-			address_cache_timer(elapsed_seconds);
-		}
-		handler_cov_task();
-#if defined(INTRINSIC_REPORTING)
-		if (mstimer_expired(&BACnet_Notification_Timer)) {
-			mstimer_reset(&BACnet_Notification_Timer);
-			Notification_Class_find_recipient();
-		}
-#endif
-		/* output */
-		if (mstimer_expired(&BACnet_Object_Timer)) {
-			mstimer_reset(&BACnet_Object_Timer);
-			elapsed_milliseconds = mstimer_interval(&BACnet_Object_Timer);
-			Device_Timer(elapsed_milliseconds);
-
-			for (unsigned int i = 1;
-			     i <= Analog_Output_Count();
-			     i++){
-				present_value = Analog_Output_Present_Value(i);
-				printf("%d ", present_value);
-			}
-			printf("\n");
-			for (unsigned int i = 1;
-			     i <= Binary_Output_Count();
-			     i++){
-				present_value = Binary_Output_Present_Value(i);
-				printf("%d ", present_value);
-			}
-			printf("\n");
-		}
 	}
+	if (mstimer_expired(&BACnet_TSM_Timer)) {
+		mstimer_reset(&BACnet_TSM_Timer);
+		elapsed_milliseconds = mstimer_interval(&BACnet_TSM_Timer);
+		tsm_timer_milliseconds(elapsed_milliseconds);
+	}
+	if (mstimer_expired(&BACnet_Address_Timer)) {
+		mstimer_reset(&BACnet_Address_Timer);
+		elapsed_milliseconds = mstimer_interval(&BACnet_Address_Timer);
+		elapsed_seconds = elapsed_milliseconds/1000;
+		address_cache_timer(elapsed_seconds);
+	}
+	handler_cov_task();
+#if defined(INTRINSIC_REPORTING)
+	if (mstimer_expired(&BACnet_Notification_Timer)) {
+		mstimer_reset(&BACnet_Notification_Timer);
+		Notification_Class_find_recipient();
+	}
+#endif
+	/* output */
+	if (mstimer_expired(&BACnet_Object_Timer)) {
+		mstimer_reset(&BACnet_Object_Timer);
+		elapsed_milliseconds = mstimer_interval(&BACnet_Object_Timer);
+		Device_Timer(elapsed_milliseconds);
+	}
+
+	ui->analog_output_field_1->setText(QString::number(Analog_Output_Present_Value(1)));
+	ui->analog_output_field_2->setText(QString::number(Analog_Output_Present_Value(2)));
+	ui->analog_output_field_3->setText(QString::number(Analog_Output_Present_Value(3)));
+	ui->analog_output_field_4->setText(QString::number(Analog_Output_Present_Value(4)));
+	ui->binary_output_field_1->setText(QString::number(Binary_Output_Present_Value(1)));
+	ui->binary_output_field_2->setText(QString::number(Binary_Output_Present_Value(2)));
+	ui->binary_output_field_3->setText(QString::number(Binary_Output_Present_Value(3)));
+	ui->binary_output_field_4->setText(QString::number(Binary_Output_Present_Value(4)));
+
 }
 
 BacnetWidget::~BacnetWidget()
