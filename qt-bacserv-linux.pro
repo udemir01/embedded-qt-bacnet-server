@@ -43,7 +43,7 @@ INCLUDEPATH += "./src/bacnet/service"
 
 SOURCES += \
 main.cpp \
-mainwindow.cpp \
+bacnetwidget.cpp \
 "./src/bacnet/*.c" \
 "./src/bacnet/basic/npdu/*.c" \
 "./src/bacnet/datalink/*.c" \
@@ -58,7 +58,7 @@ mainwindow.cpp \
 "./ports/linux/*-init.c" \
 
 HEADERS += \
-mainwindow.h \
+bacnetwidget.h \
 "./src/bacnet/*.h" \
 "./src/bacnet/basic/npdu/*.h" \
 "./src/bacnet/basic/services.h" \
@@ -73,7 +73,7 @@ mainwindow.h \
 "./src/bacnet/basic/sys/*.h" \
 
 FORMS += \
-mainwindow.ui
+bacnetwidget.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

@@ -56,20 +56,20 @@
 #include "ao.h"
 
 struct object_data {
-    bool Out_Of_Service : 1;
-    bool Overridden : 1;
-    bool Changed : 1;
-    float COV_Increment;
-    float Prior_Value;
-    bool Relinquished[BACNET_MAX_PRIORITY];
-    float Priority_Array[BACNET_MAX_PRIORITY];
-    float Relinquish_Default;
-    float Min_Pres_Value;
-    float Max_Pres_Value;
-    uint16_t Units;
-    uint8_t Reliability;
-    const char *Object_Name;
-    const char *Description;
+	bool Out_Of_Service : 1;
+	bool Overridden : 1;
+	bool Changed : 1;
+	float COV_Increment;
+	float Prior_Value;
+	bool Relinquished[BACNET_MAX_PRIORITY];
+	float Priority_Array[BACNET_MAX_PRIORITY];
+	float Relinquish_Default;
+	float Min_Pres_Value;
+	float Max_Pres_Value;
+	uint16_t Units;
+	uint8_t Reliability;
+	const char *Object_Name;
+	const char *Description;
 };
 /* Key List for storing the object data sorted by instance number  */
 static OS_Keylist Object_List;
@@ -77,22 +77,22 @@ static OS_Keylist Object_List;
 static const BACNET_OBJECT_TYPE Object_Type = OBJECT_ANALOG_OUTPUT;
 /* callback for present value writes */
 static analog_output_write_present_value_callback
-    Analog_Output_Write_Present_Value_Callback;
+Analog_Output_Write_Present_Value_Callback;
 
 /* These three arrays are used by the ReadPropertyMultiple handler */
 
 static const int Analog_Output_Properties_Required[] = { PROP_OBJECT_IDENTIFIER,
-    PROP_OBJECT_NAME, PROP_OBJECT_TYPE, PROP_PRESENT_VALUE, PROP_STATUS_FLAGS,
-    PROP_EVENT_STATE, PROP_OUT_OF_SERVICE, PROP_UNITS, PROP_PRIORITY_ARRAY,
-    PROP_RELINQUISH_DEFAULT,
+	PROP_OBJECT_NAME, PROP_OBJECT_TYPE, PROP_PRESENT_VALUE, PROP_STATUS_FLAGS,
+	PROP_EVENT_STATE, PROP_OUT_OF_SERVICE, PROP_UNITS, PROP_PRIORITY_ARRAY,
+	PROP_RELINQUISH_DEFAULT,
 #if (BACNET_PROTOCOL_REVISION >= 17)
-    PROP_CURRENT_COMMAND_PRIORITY,
+	PROP_CURRENT_COMMAND_PRIORITY,
 #endif
-    -1 };
+	-1 };
 
 static const int Analog_Output_Properties_Optional[] = { PROP_RELIABILITY,
-    PROP_DESCRIPTION, PROP_COV_INCREMENT, PROP_MIN_PRES_VALUE,
-    PROP_MAX_PRES_VALUE, -1 };
+	PROP_DESCRIPTION, PROP_COV_INCREMENT, PROP_MIN_PRES_VALUE,
+	PROP_MAX_PRES_VALUE, -1 };
 
 static const int Analog_Output_Properties_Proprietary[] = { -1 };
 
@@ -107,19 +107,19 @@ static const int Analog_Output_Properties_Proprietary[] = { -1 };
  * BACnet proprietary properties for this object.
  */
 void Analog_Output_Property_Lists(
-    const int **pRequired, const int **pOptional, const int **pProprietary)
+				  const int **pRequired, const int **pOptional, const int **pProprietary)
 {
-    if (pRequired) {
-        *pRequired = Analog_Output_Properties_Required;
-    }
-    if (pOptional) {
-        *pOptional = Analog_Output_Properties_Optional;
-    }
-    if (pProprietary) {
-        *pProprietary = Analog_Output_Properties_Proprietary;
-    }
+	if (pRequired) {
+		*pRequired = Analog_Output_Properties_Required;
+	}
+	if (pOptional) {
+		*pOptional = Analog_Output_Properties_Optional;
+	}
+	if (pProprietary) {
+		*pProprietary = Analog_Output_Properties_Proprietary;
+	}
 
-    return;
+	return;
 }
 
 /**
@@ -129,14 +129,14 @@ void Analog_Output_Property_Lists(
  */
 bool Analog_Output_Valid_Instance(uint32_t object_instance)
 {
-    struct object_data *pObject;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        return true;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		return true;
+	}
 
-    return false;
+	return false;
 }
 
 /**
@@ -145,7 +145,7 @@ bool Analog_Output_Valid_Instance(uint32_t object_instance)
  */
 unsigned Analog_Output_Count(void)
 {
-    return Keylist_Count(Object_List);
+	return Keylist_Count(Object_List);
 }
 
 /**
@@ -156,7 +156,7 @@ unsigned Analog_Output_Count(void)
  */
 uint32_t Analog_Output_Index_To_Instance(unsigned index)
 {
-    return Keylist_Key(Object_List, index);
+	return Keylist_Key(Object_List, index);
 }
 
 /**
@@ -168,7 +168,7 @@ uint32_t Analog_Output_Index_To_Instance(unsigned index)
  */
 unsigned Analog_Output_Instance_To_Index(uint32_t object_instance)
 {
-    return Keylist_Index(Object_List, object_instance);
+	return Keylist_Index(Object_List, object_instance);
 }
 
 /**
@@ -178,22 +178,22 @@ unsigned Analog_Output_Instance_To_Index(uint32_t object_instance)
  */
 float Analog_Output_Present_Value(uint32_t object_instance)
 {
-    float value = 0.0;
-    uint8_t priority = 0; /* loop counter */
-    struct object_data *pObject;
+	float value = 0.0;
+	uint8_t priority = 0; /* loop counter */
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        value = Analog_Output_Relinquish_Default(object_instance);
-        for (priority = 0; priority < BACNET_MAX_PRIORITY; priority++) {
-            if (!pObject->Relinquished[priority]) {
-                value = pObject->Priority_Array[priority];
-                break;
-            }
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		value = Analog_Output_Relinquish_Default(object_instance);
+		for (priority = 0; priority < BACNET_MAX_PRIORITY; priority++) {
+			if (!pObject->Relinquished[priority]) {
+				value = pObject->Priority_Array[priority];
+				break;
+			}
+		}
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -203,21 +203,21 @@ float Analog_Output_Present_Value(uint32_t object_instance)
  */
 unsigned Analog_Output_Present_Value_Priority(uint32_t object_instance)
 {
-    unsigned p = 0; /* loop counter */
-    unsigned priority = 0; /* return value */
-    struct object_data *pObject;
+	unsigned p = 0; /* loop counter */
+	unsigned priority = 0; /* return value */
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        for (p = 0; p < BACNET_MAX_PRIORITY; p++) {
-            if (!pObject->Relinquished[p]) {
-                priority = p + 1;
-                break;
-            }
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		for (p = 0; p < BACNET_MAX_PRIORITY; p++) {
+			if (!pObject->Relinquished[p]) {
+				priority = p + 1;
+				break;
+			}
+		}
+	}
 
-    return priority;
+	return priority;
 }
 
 /**
@@ -231,23 +231,23 @@ unsigned Analog_Output_Present_Value_Priority(uint32_t object_instance)
  *   BACNET_STATUS_ERROR for ERROR_CODE_INVALID_ARRAY_INDEX
  */
 static int Analog_Output_Priority_Array_Encode(
-    uint32_t object_instance, BACNET_ARRAY_INDEX index, uint8_t *apdu)
+					       uint32_t object_instance, BACNET_ARRAY_INDEX index, uint8_t *apdu)
 {
-    int apdu_len = BACNET_STATUS_ERROR;
-    struct object_data *pObject;
-    float real_value;
+	int apdu_len = BACNET_STATUS_ERROR;
+	struct object_data *pObject;
+	float real_value;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject && (index < BACNET_MAX_PRIORITY)) {
-        if (pObject->Relinquished[index]) {
-            apdu_len = encode_application_null(apdu);
-        } else {
-            real_value = pObject->Priority_Array[index];
-            apdu_len = encode_application_real(apdu, real_value);
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject && (index < BACNET_MAX_PRIORITY)) {
+		if (pObject->Relinquished[index]) {
+			apdu_len = encode_application_null(apdu);
+		} else {
+			real_value = pObject->Priority_Array[index];
+			apdu_len = encode_application_real(apdu, real_value);
+		}
+	}
 
-    return apdu_len;
+	return apdu_len;
 }
 
 /**
@@ -259,15 +259,15 @@ static int Analog_Output_Priority_Array_Encode(
  */
 float Analog_Output_Relinquish_Default(uint32_t object_instance)
 {
-    float value = 0.0;
-    struct object_data *pObject;
+	float value = 0.0;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        value = pObject->Relinquish_Default;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		value = pObject->Relinquish_Default;
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -280,16 +280,16 @@ float Analog_Output_Relinquish_Default(uint32_t object_instance)
  */
 bool Analog_Output_Relinquish_Default_Set(uint32_t object_instance, float value)
 {
-    bool status = false;
-    struct object_data *pObject;
+	bool status = false;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        pObject->Relinquish_Default = value;
-        status = true;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		pObject->Relinquish_Default = value;
+		status = true;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -299,25 +299,25 @@ bool Analog_Output_Relinquish_Default_Set(uint32_t object_instance, float value)
  * @param  value - floating point analog value
  */
 static void Analog_Output_Present_Value_COV_Detect(
-    struct object_data *pObject, float value)
+						   struct object_data *pObject, float value)
 {
-    float prior_value = 0.0;
-    float cov_increment = 0.0;
-    float cov_delta = 0.0;
+	float prior_value = 0.0;
+	float cov_increment = 0.0;
+	float cov_delta = 0.0;
 
-    if (pObject) {
-        prior_value = pObject->Prior_Value;
-        cov_increment = pObject->COV_Increment;
-        if (prior_value > value) {
-            cov_delta = prior_value - value;
-        } else {
-            cov_delta = value - prior_value;
-        }
-        if (cov_delta >= cov_increment) {
-            pObject->Changed = true;
-            pObject->Prior_Value = value;
-        }
-    }
+	if (pObject) {
+		prior_value = pObject->Prior_Value;
+		cov_increment = pObject->COV_Increment;
+		if (prior_value > value) {
+			cov_delta = prior_value - value;
+		} else {
+			cov_delta = value - prior_value;
+		}
+		if (cov_delta >= cov_increment) {
+			pObject->Changed = true;
+			pObject->Prior_Value = value;
+		}
+	}
 }
 
 /**
@@ -329,23 +329,23 @@ static void Analog_Output_Present_Value_COV_Detect(
  * @return  true if values are within range and present-value is set.
  */
 bool Analog_Output_Present_Value_Set(
-    uint32_t object_instance, float value, unsigned priority)
+				     uint32_t object_instance, float value, unsigned priority)
 {
-    bool status = false;
-    struct object_data *pObject;
+	bool status = false;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        if ((priority >= 1) && (priority <= BACNET_MAX_PRIORITY)) {
-            pObject->Relinquished[priority - 1] = false;
-            pObject->Priority_Array[priority - 1] = value;
-            Analog_Output_Present_Value_COV_Detect(
-                pObject, Analog_Output_Present_Value(object_instance));
-            status = true;
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		if ((priority >= 1) && (priority <= BACNET_MAX_PRIORITY)) {
+			pObject->Relinquished[priority - 1] = false;
+			pObject->Priority_Array[priority - 1] = value;
+			Analog_Output_Present_Value_COV_Detect(
+							       pObject, Analog_Output_Present_Value(object_instance));
+			status = true;
+		}
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -355,23 +355,23 @@ bool Analog_Output_Present_Value_Set(
  * @return  true if values are within range and present-value is relinquished.
  */
 bool Analog_Output_Present_Value_Relinquish(
-    uint32_t object_instance, unsigned priority)
+					    uint32_t object_instance, unsigned priority)
 {
-    bool status = false;
-    struct object_data *pObject;
+	bool status = false;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        if ((priority >= 1) && (priority <= BACNET_MAX_PRIORITY)) {
-            pObject->Relinquished[priority - 1] = true;
-            pObject->Priority_Array[priority - 1] = 0.0;
-            Analog_Output_Present_Value_COV_Detect(
-                pObject, Analog_Output_Present_Value(object_instance));
-            status = true;
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		if ((priority >= 1) && (priority <= BACNET_MAX_PRIORITY)) {
+			pObject->Relinquished[priority - 1] = true;
+			pObject->Priority_Array[priority - 1] = 0.0;
+			Analog_Output_Present_Value_COV_Detect(
+							       pObject, Analog_Output_Present_Value(object_instance));
+			status = true;
+		}
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -385,50 +385,50 @@ bool Analog_Output_Present_Value_Relinquish(
  * @return  true if values are within range and present-value is set.
  */
 static bool Analog_Output_Present_Value_Write(uint32_t object_instance,
-    float value,
-    uint8_t priority,
-    BACNET_ERROR_CLASS *error_class,
-    BACNET_ERROR_CODE *error_code)
+					      float value,
+					      uint8_t priority,
+					      BACNET_ERROR_CLASS *error_class,
+					      BACNET_ERROR_CODE *error_code)
 {
-    bool status = false;
-    struct object_data *pObject;
-    float old_value = 0.0;
-    float new_value = 0.0;
+	bool status = false;
+	struct object_data *pObject;
+	float old_value = 0.0;
+	float new_value = 0.0;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        if ((priority >= 1) && (priority <= BACNET_MAX_PRIORITY) &&
-            (value >= 0.0) && (value <= 100.0)) {
-            if (priority != 6) {
-                old_value = Analog_Output_Present_Value(object_instance);
-                Analog_Output_Present_Value_Set(
-                    object_instance, value, priority);
-                if (pObject->Out_Of_Service) {
-                    /* The physical point that the object represents
-                        is not in service. This means that changes to the
-                        Present_Value property are decoupled from the
-                        physical output when the value of Out_Of_Service
-                        is true. */
-                } else if (Analog_Output_Write_Present_Value_Callback) {
-                    new_value = Analog_Output_Present_Value(object_instance);
-                    Analog_Output_Write_Present_Value_Callback(
-                        object_instance, old_value, new_value);
-                }
-                status = true;
-            } else {
-                *error_class = ERROR_CLASS_PROPERTY;
-                *error_code = ERROR_CODE_WRITE_ACCESS_DENIED;
-            }
-        } else {
-            *error_class = ERROR_CLASS_PROPERTY;
-            *error_code = ERROR_CODE_VALUE_OUT_OF_RANGE;
-        }
-    } else {
-        *error_class = ERROR_CLASS_OBJECT;
-        *error_code = ERROR_CODE_UNKNOWN_OBJECT;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		if ((priority >= 1) && (priority <= BACNET_MAX_PRIORITY) &&
+		    (value >= 0.0) && (value <= 100.0)) {
+			if (priority != 6) {
+				old_value = Analog_Output_Present_Value(object_instance);
+				Analog_Output_Present_Value_Set(
+								object_instance, value, priority);
+				if (pObject->Out_Of_Service) {
+					/* The physical point that the object represents
+					   is not in service. This means that changes to the
+					   Present_Value property are decoupled from the
+					   physical output when the value of Out_Of_Service
+					   is true. */
+				} else if (Analog_Output_Write_Present_Value_Callback) {
+					new_value = Analog_Output_Present_Value(object_instance);
+					Analog_Output_Write_Present_Value_Callback(
+										   object_instance, old_value, new_value);
+				}
+				status = true;
+			} else {
+				*error_class = ERROR_CLASS_PROPERTY;
+				*error_code = ERROR_CODE_WRITE_ACCESS_DENIED;
+			}
+		} else {
+			*error_class = ERROR_CLASS_PROPERTY;
+			*error_code = ERROR_CODE_VALUE_OUT_OF_RANGE;
+		}
+	} else {
+		*error_class = ERROR_CLASS_OBJECT;
+		*error_code = ERROR_CODE_UNKNOWN_OBJECT;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -441,49 +441,49 @@ static bool Analog_Output_Present_Value_Write(uint32_t object_instance,
  * @return  true if values are within range and write is requested
  */
 static bool Analog_Output_Present_Value_Relinquish_Write(
-    uint32_t object_instance,
-    uint8_t priority,
-    BACNET_ERROR_CLASS *error_class,
-    BACNET_ERROR_CODE *error_code)
+							 uint32_t object_instance,
+							 uint8_t priority,
+							 BACNET_ERROR_CLASS *error_class,
+							 BACNET_ERROR_CODE *error_code)
 {
-    bool status = false;
-    struct object_data *pObject;
-    float old_value = 0.0;
-    float new_value = 0.0;
+	bool status = false;
+	struct object_data *pObject;
+	float old_value = 0.0;
+	float new_value = 0.0;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        if ((priority >= 1) && (priority <= BACNET_MAX_PRIORITY)) {
-            if (priority != 6) {
-                old_value = Analog_Output_Present_Value(object_instance);
-                Analog_Output_Present_Value_Relinquish(
-                    object_instance, priority);
-                if (pObject->Out_Of_Service) {
-                    /* The physical point that the object represents
-                        is not in service. This means that changes to the
-                        Present_Value property are decoupled from the
-                        physical output when the value of Out_Of_Service
-                        is true. */
-                } else if (Analog_Output_Write_Present_Value_Callback) {
-                    new_value = Analog_Output_Present_Value(object_instance);
-                    Analog_Output_Write_Present_Value_Callback(
-                        object_instance, old_value, new_value);
-                }
-                status = true;
-            } else {
-                *error_class = ERROR_CLASS_PROPERTY;
-                *error_code = ERROR_CODE_WRITE_ACCESS_DENIED;
-            }
-        } else {
-            *error_class = ERROR_CLASS_PROPERTY;
-            *error_code = ERROR_CODE_VALUE_OUT_OF_RANGE;
-        }
-    } else {
-        *error_class = ERROR_CLASS_OBJECT;
-        *error_code = ERROR_CODE_UNKNOWN_OBJECT;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		if ((priority >= 1) && (priority <= BACNET_MAX_PRIORITY)) {
+			if (priority != 6) {
+				old_value = Analog_Output_Present_Value(object_instance);
+				Analog_Output_Present_Value_Relinquish(
+								       object_instance, priority);
+				if (pObject->Out_Of_Service) {
+					/* The physical point that the object represents
+					   is not in service. This means that changes to the
+					   Present_Value property are decoupled from the
+					   physical output when the value of Out_Of_Service
+					   is true. */
+				} else if (Analog_Output_Write_Present_Value_Callback) {
+					new_value = Analog_Output_Present_Value(object_instance);
+					Analog_Output_Write_Present_Value_Callback(
+										   object_instance, old_value, new_value);
+				}
+				status = true;
+			} else {
+				*error_class = ERROR_CLASS_PROPERTY;
+				*error_code = ERROR_CODE_WRITE_ACCESS_DENIED;
+			}
+		} else {
+			*error_class = ERROR_CLASS_PROPERTY;
+			*error_code = ERROR_CODE_VALUE_OUT_OF_RANGE;
+		}
+	} else {
+		*error_class = ERROR_CLASS_OBJECT;
+		*error_code = ERROR_CODE_UNKNOWN_OBJECT;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -497,25 +497,25 @@ static bool Analog_Output_Present_Value_Relinquish_Write(
  * @return  true if object-name was retrieved
  */
 bool Analog_Output_Object_Name(
-    uint32_t object_instance, BACNET_CHARACTER_STRING *object_name)
+			       uint32_t object_instance, BACNET_CHARACTER_STRING *object_name)
 {
-    bool status = false;
-    struct object_data *pObject;
-    char name_text[32];
+	bool status = false;
+	struct object_data *pObject;
+	char name_text[32];
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        if (pObject->Object_Name) {
-            status =
-                characterstring_init_ansi(object_name, pObject->Object_Name);
-        } else {
-            snprintf(name_text, sizeof(name_text), "ANALOG OUTPUT %u",
-                object_instance);
-            status = characterstring_init_ansi(object_name, name_text);
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		if (pObject->Object_Name) {
+			status =
+				characterstring_init_ansi(object_name, pObject->Object_Name);
+		} else {
+			snprintf(name_text, sizeof(name_text), "ANALOG OUTPUT %u",
+				 object_instance);
+			status = characterstring_init_ansi(object_name, name_text);
+		}
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -528,16 +528,16 @@ bool Analog_Output_Object_Name(
  */
 bool Analog_Output_Name_Set(uint32_t object_instance, char *new_name)
 {
-    bool status = false; /* return value */
-    struct object_data *pObject;
+	bool status = false; /* return value */
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject && new_name) {
-        status = true;
-        pObject->Object_Name = new_name;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject && new_name) {
+		status = true;
+		pObject->Object_Name = new_name;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -549,15 +549,15 @@ bool Analog_Output_Name_Set(uint32_t object_instance, char *new_name)
  */
 uint16_t Analog_Output_Units(uint32_t object_instance)
 {
-    uint16_t units = UNITS_NO_UNITS;
-    struct object_data *pObject;
+	uint16_t units = UNITS_NO_UNITS;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        units = pObject->Units;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		units = pObject->Units;
+	}
 
-    return units;
+	return units;
 }
 
 /**
@@ -570,16 +570,16 @@ uint16_t Analog_Output_Units(uint32_t object_instance)
  */
 bool Analog_Output_Units_Set(uint32_t object_instance, uint16_t units)
 {
-    bool status = false;
-    struct object_data *pObject;
+	bool status = false;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        pObject->Units = units;
-        status = true;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		pObject->Units = units;
+		status = true;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -592,15 +592,15 @@ bool Analog_Output_Units_Set(uint32_t object_instance, uint16_t units)
  */
 bool Analog_Output_Out_Of_Service(uint32_t object_instance)
 {
-    bool value = false;
-    struct object_data *pObject;
+	bool value = false;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        value = pObject->Out_Of_Service;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		value = pObject->Out_Of_Service;
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -612,15 +612,15 @@ bool Analog_Output_Out_Of_Service(uint32_t object_instance)
  */
 void Analog_Output_Out_Of_Service_Set(uint32_t object_instance, bool value)
 {
-    struct object_data *pObject;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        if (pObject->Out_Of_Service != value) {
-            pObject->Out_Of_Service = value;
-            pObject->Changed = true;
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		if (pObject->Out_Of_Service != value) {
+			pObject->Out_Of_Service = value;
+			pObject->Changed = true;
+		}
+	}
 }
 
 /**
@@ -631,15 +631,15 @@ void Analog_Output_Out_Of_Service_Set(uint32_t object_instance, bool value)
  */
 bool Analog_Output_Overridden(uint32_t object_instance)
 {
-    bool value = false;
-    struct object_data *pObject;
+	bool value = false;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        value = pObject->Overridden;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		value = pObject->Overridden;
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -650,15 +650,15 @@ bool Analog_Output_Overridden(uint32_t object_instance)
  */
 void Analog_Output_Overridden_Set(uint32_t object_instance, bool value)
 {
-    struct object_data *pObject;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        if (pObject->Overridden != value) {
-            pObject->Overridden = value;
-            pObject->Changed = true;
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		if (pObject->Overridden != value) {
+			pObject->Overridden = value;
+			pObject->Changed = true;
+		}
+	}
 }
 
 /**
@@ -668,15 +668,15 @@ void Analog_Output_Overridden_Set(uint32_t object_instance, bool value)
  */
 BACNET_RELIABILITY Analog_Output_Reliability(uint32_t object_instance)
 {
-    BACNET_RELIABILITY reliability = RELIABILITY_NO_FAULT_DETECTED;
-    struct object_data *pObject;
+	BACNET_RELIABILITY reliability = RELIABILITY_NO_FAULT_DETECTED;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        reliability = (BACNET_RELIABILITY)pObject->Reliability;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		reliability = (BACNET_RELIABILITY)pObject->Reliability;
+	}
 
-    return reliability;
+	return reliability;
 }
 
 /**
@@ -686,15 +686,15 @@ BACNET_RELIABILITY Analog_Output_Reliability(uint32_t object_instance)
  */
 static bool Analog_Output_Object_Fault(struct object_data *pObject)
 {
-    bool fault = false;
+	bool fault = false;
 
-    if (pObject) {
-        if (pObject->Reliability != RELIABILITY_NO_FAULT_DETECTED) {
-            fault = true;
-        }
-    }
+	if (pObject) {
+		if (pObject->Reliability != RELIABILITY_NO_FAULT_DETECTED) {
+			fault = true;
+		}
+	}
 
-    return fault;
+	return fault;
 }
 
 /**
@@ -704,25 +704,25 @@ static bool Analog_Output_Object_Fault(struct object_data *pObject)
  * @return  true if values are within range and property is set.
  */
 bool Analog_Output_Reliability_Set(
-    uint32_t object_instance, BACNET_RELIABILITY value)
+				   uint32_t object_instance, BACNET_RELIABILITY value)
 {
-    struct object_data *pObject;
-    bool status = false;
-    bool fault = false;
+	struct object_data *pObject;
+	bool status = false;
+	bool fault = false;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        if (value <= 255) {
-            fault = Analog_Output_Object_Fault(pObject);
-            pObject->Reliability = value;
-            if (fault != Analog_Output_Object_Fault(pObject)) {
-                pObject->Changed = true;
-            }
-            status = true;
-        }
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		if (value <= 255) {
+			fault = Analog_Output_Object_Fault(pObject);
+			pObject->Reliability = value;
+			if (fault != Analog_Output_Object_Fault(pObject)) {
+				pObject->Changed = true;
+			}
+			status = true;
+		}
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -732,11 +732,11 @@ bool Analog_Output_Reliability_Set(
  */
 static bool Analog_Output_Fault(uint32_t object_instance)
 {
-    struct object_data *pObject;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
+	pObject = Keylist_Data(Object_List, object_instance);
 
-    return Analog_Output_Object_Fault(pObject);
+	return Analog_Output_Object_Fault(pObject);
 }
 
 /**
@@ -746,15 +746,15 @@ static bool Analog_Output_Fault(uint32_t object_instance)
  */
 char *Analog_Output_Description(uint32_t object_instance)
 {
-    char *name = NULL;
-    struct object_data *pObject;
+	char *name = NULL;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        name = (char *)pObject->Description;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		name = (char *)pObject->Description;
+	}
 
-    return name;
+	return name;
 }
 
 /**
@@ -765,16 +765,16 @@ char *Analog_Output_Description(uint32_t object_instance)
  */
 bool Analog_Output_Description_Set(uint32_t object_instance, char *new_name)
 {
-    bool status = false; /* return value */
-    struct object_data *pObject;
+	bool status = false; /* return value */
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject && new_name) {
-        status = true;
-        pObject->Description = new_name;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject && new_name) {
+		status = true;
+		pObject->Description = new_name;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -784,15 +784,15 @@ bool Analog_Output_Description_Set(uint32_t object_instance, char *new_name)
  */
 float Analog_Output_Min_Pres_Value(uint32_t object_instance)
 {
-    float value = 0.0;
-    struct object_data *pObject;
+	float value = 0.0;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        value = pObject->Min_Pres_Value;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		value = pObject->Min_Pres_Value;
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -803,16 +803,16 @@ float Analog_Output_Min_Pres_Value(uint32_t object_instance)
  */
 bool Analog_Output_Min_Pres_Value_Set(uint32_t object_instance, float value)
 {
-    bool status = false;
-    struct object_data *pObject;
+	bool status = false;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        pObject->Min_Pres_Value = value;
-        status = true;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		pObject->Min_Pres_Value = value;
+		status = true;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -822,15 +822,15 @@ bool Analog_Output_Min_Pres_Value_Set(uint32_t object_instance, float value)
  */
 float Analog_Output_Max_Pres_Value(uint32_t object_instance)
 {
-    float value = 0.0;
-    struct object_data *pObject;
+	float value = 0.0;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        value = pObject->Max_Pres_Value;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		value = pObject->Max_Pres_Value;
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -841,16 +841,16 @@ float Analog_Output_Max_Pres_Value(uint32_t object_instance)
  */
 bool Analog_Output_Max_Pres_Value_Set(uint32_t object_instance, float value)
 {
-    bool status = false;
-    struct object_data *pObject;
+	bool status = false;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        pObject->Max_Pres_Value = value;
-        status = true;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		pObject->Max_Pres_Value = value;
+		status = true;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -860,16 +860,16 @@ bool Analog_Output_Max_Pres_Value_Set(uint32_t object_instance, float value)
  */
 bool Analog_Output_Change_Of_Value(uint32_t object_instance)
 {
-    bool changed = false;
+	bool changed = false;
 
-    struct object_data *pObject;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        changed = pObject->Changed;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		changed = pObject->Changed;
+	}
 
-    return changed;
+	return changed;
 }
 
 /**
@@ -878,12 +878,12 @@ bool Analog_Output_Change_Of_Value(uint32_t object_instance)
  */
 void Analog_Output_Change_Of_Value_Clear(uint32_t object_instance)
 {
-    struct object_data *pObject;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        pObject->Changed = false;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		pObject->Changed = false;
+	}
 }
 
 /**
@@ -893,20 +893,20 @@ void Analog_Output_Change_Of_Value_Clear(uint32_t object_instance)
  * @return true if values were encoded
  */
 bool Analog_Output_Encode_Value_List(
-    uint32_t object_instance, BACNET_PROPERTY_VALUE *value_list)
+				     uint32_t object_instance, BACNET_PROPERTY_VALUE *value_list)
 {
-    bool status = false;
-    struct object_data *pObject;
-    const bool in_alarm = false;
-    const bool fault = false;
-    const bool overridden = false;
+	bool status = false;
+	struct object_data *pObject;
+	const bool in_alarm = false;
+	const bool fault = false;
+	const bool overridden = false;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        status = cov_value_list_encode_real(value_list, pObject->Prior_Value,
-            in_alarm, fault, overridden, pObject->Out_Of_Service);
-    }
-    return status;
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		status = cov_value_list_encode_real(value_list, pObject->Prior_Value,
+						    in_alarm, fault, overridden, pObject->Out_Of_Service);
+	}
+	return status;
 }
 
 /**
@@ -916,15 +916,15 @@ bool Analog_Output_Encode_Value_List(
  */
 float Analog_Output_COV_Increment(uint32_t object_instance)
 {
-    float value = 0.0;
-    struct object_data *pObject;
+	float value = 0.0;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        value = pObject->COV_Increment;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		value = pObject->COV_Increment;
+	}
 
-    return value;
+	return value;
 }
 
 /**
@@ -935,12 +935,12 @@ float Analog_Output_COV_Increment(uint32_t object_instance)
  */
 void Analog_Output_COV_Increment_Set(uint32_t object_instance, float value)
 {
-    struct object_data *pObject;
+	struct object_data *pObject;
 
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (pObject) {
-        pObject->COV_Increment = value;
-    }
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (pObject) {
+		pObject->COV_Increment = value;
+	}
 }
 
 /**
@@ -953,128 +953,128 @@ void Analog_Output_COV_Increment_Set(uint32_t object_instance, float value)
  */
 int Analog_Output_Read_Property(BACNET_READ_PROPERTY_DATA *rpdata)
 {
-    int apdu_len = 0; /* return value */
-    int apdu_size = 0;
-    BACNET_BIT_STRING bit_string;
-    BACNET_CHARACTER_STRING char_string;
-    uint8_t *apdu = NULL;
-    uint32_t units = 0;
-    float real_value = 0.0;
-    unsigned i = 0;
-    bool state = false;
+	int apdu_len = 0; /* return value */
+	int apdu_size = 0;
+	BACNET_BIT_STRING bit_string;
+	BACNET_CHARACTER_STRING char_string;
+	uint8_t *apdu = NULL;
+	uint32_t units = 0;
+	float real_value = 0.0;
+	unsigned i = 0;
+	bool state = false;
 
-    if ((rpdata == NULL) || (rpdata->application_data == NULL) ||
-        (rpdata->application_data_len == 0)) {
-        return 0;
-    }
+	if ((rpdata == NULL) || (rpdata->application_data == NULL) ||
+	    (rpdata->application_data_len == 0)) {
+		return 0;
+	}
 
-    apdu = rpdata->application_data;
-    apdu_size = rpdata->application_data_len;
-    switch (rpdata->object_property) {
-        case PROP_OBJECT_IDENTIFIER:
-            apdu_len = encode_application_object_id(
-                &apdu[0], Object_Type, rpdata->object_instance);
-            break;
-        case PROP_OBJECT_NAME:
-            Analog_Output_Object_Name(rpdata->object_instance, &char_string);
-            apdu_len =
-                encode_application_character_string(&apdu[0], &char_string);
-            break;
-        case PROP_OBJECT_TYPE:
-            apdu_len = encode_application_enumerated(&apdu[0], Object_Type);
-            break;
-        case PROP_PRESENT_VALUE:
-            real_value = Analog_Output_Present_Value(rpdata->object_instance);
-            apdu_len = encode_application_real(&apdu[0], real_value);
-            break;
-        case PROP_MIN_PRES_VALUE:
-            real_value = Analog_Output_Min_Pres_Value(rpdata->object_instance);
-            apdu_len = encode_application_real(&apdu[0], real_value);
-            break;
-        case PROP_MAX_PRES_VALUE:
-            real_value = Analog_Output_Max_Pres_Value(rpdata->object_instance);
-            apdu_len = encode_application_real(&apdu[0], real_value);
-            break;
-        case PROP_STATUS_FLAGS:
-            bitstring_init(&bit_string);
-            bitstring_set_bit(&bit_string, STATUS_FLAG_IN_ALARM, false);
-            state = Analog_Output_Fault(rpdata->object_instance);
-            bitstring_set_bit(&bit_string, STATUS_FLAG_FAULT, state);
-            state = Analog_Output_Overridden(rpdata->object_instance);
-            bitstring_set_bit(&bit_string, STATUS_FLAG_OVERRIDDEN, state);
-            state = Analog_Output_Out_Of_Service(rpdata->object_instance);
-            bitstring_set_bit(&bit_string, STATUS_FLAG_OUT_OF_SERVICE, state);
-            apdu_len = encode_application_bitstring(&apdu[0], &bit_string);
-            break;
-        case PROP_RELIABILITY:
-            apdu_len = encode_application_enumerated(
-                &apdu[0], Analog_Output_Reliability(rpdata->object_instance));
-            break;
-        case PROP_EVENT_STATE:
-            apdu_len =
-                encode_application_enumerated(&apdu[0], EVENT_STATE_NORMAL);
-            break;
-        case PROP_OUT_OF_SERVICE:
-            state = Analog_Output_Out_Of_Service(rpdata->object_instance);
-            apdu_len = encode_application_boolean(&apdu[0], state);
-            break;
-        case PROP_UNITS:
-            units = Analog_Output_Units(rpdata->object_instance);
-            apdu_len = encode_application_enumerated(&apdu[0], units);
-            break;
-        case PROP_PRIORITY_ARRAY:
-            apdu_len = bacnet_array_encode(rpdata->object_instance,
-                rpdata->array_index, Analog_Output_Priority_Array_Encode,
-                BACNET_MAX_PRIORITY, apdu, apdu_size);
-            if (apdu_len == BACNET_STATUS_ABORT) {
-                rpdata->error_code =
-                    ERROR_CODE_ABORT_SEGMENTATION_NOT_SUPPORTED;
-            } else if (apdu_len == BACNET_STATUS_ERROR) {
-                rpdata->error_class = ERROR_CLASS_PROPERTY;
-                rpdata->error_code = ERROR_CODE_INVALID_ARRAY_INDEX;
-            }
-            break;
-        case PROP_RELINQUISH_DEFAULT:
-            real_value =
-                Analog_Output_Relinquish_Default(rpdata->object_instance);
-            apdu_len = encode_application_real(&apdu[0], real_value);
-            break;
-        case PROP_DESCRIPTION:
-            characterstring_init_ansi(&char_string,
-                Analog_Output_Description(rpdata->object_instance));
-            apdu_len =
-                encode_application_character_string(&apdu[0], &char_string);
-            break;
-        case PROP_COV_INCREMENT:
-            apdu_len = encode_application_real(
-                &apdu[0], Analog_Output_COV_Increment(rpdata->object_instance));
-            break;
+	apdu = rpdata->application_data;
+	apdu_size = rpdata->application_data_len;
+	switch (rpdata->object_property) {
+	case PROP_OBJECT_IDENTIFIER:
+		apdu_len = encode_application_object_id(
+							&apdu[0], Object_Type, rpdata->object_instance);
+		break;
+	case PROP_OBJECT_NAME:
+		Analog_Output_Object_Name(rpdata->object_instance, &char_string);
+		apdu_len =
+			encode_application_character_string(&apdu[0], &char_string);
+		break;
+	case PROP_OBJECT_TYPE:
+		apdu_len = encode_application_enumerated(&apdu[0], Object_Type);
+		break;
+	case PROP_PRESENT_VALUE:
+		real_value = Analog_Output_Present_Value(rpdata->object_instance);
+		apdu_len = encode_application_real(&apdu[0], real_value);
+		break;
+	case PROP_MIN_PRES_VALUE:
+		real_value = Analog_Output_Min_Pres_Value(rpdata->object_instance);
+		apdu_len = encode_application_real(&apdu[0], real_value);
+		break;
+	case PROP_MAX_PRES_VALUE:
+		real_value = Analog_Output_Max_Pres_Value(rpdata->object_instance);
+		apdu_len = encode_application_real(&apdu[0], real_value);
+		break;
+	case PROP_STATUS_FLAGS:
+		bitstring_init(&bit_string);
+		bitstring_set_bit(&bit_string, STATUS_FLAG_IN_ALARM, false);
+		state = Analog_Output_Fault(rpdata->object_instance);
+		bitstring_set_bit(&bit_string, STATUS_FLAG_FAULT, state);
+		state = Analog_Output_Overridden(rpdata->object_instance);
+		bitstring_set_bit(&bit_string, STATUS_FLAG_OVERRIDDEN, state);
+		state = Analog_Output_Out_Of_Service(rpdata->object_instance);
+		bitstring_set_bit(&bit_string, STATUS_FLAG_OUT_OF_SERVICE, state);
+		apdu_len = encode_application_bitstring(&apdu[0], &bit_string);
+		break;
+	case PROP_RELIABILITY:
+		apdu_len = encode_application_enumerated(
+							 &apdu[0], Analog_Output_Reliability(rpdata->object_instance));
+		break;
+	case PROP_EVENT_STATE:
+		apdu_len =
+			encode_application_enumerated(&apdu[0], EVENT_STATE_NORMAL);
+		break;
+	case PROP_OUT_OF_SERVICE:
+		state = Analog_Output_Out_Of_Service(rpdata->object_instance);
+		apdu_len = encode_application_boolean(&apdu[0], state);
+		break;
+	case PROP_UNITS:
+		units = Analog_Output_Units(rpdata->object_instance);
+		apdu_len = encode_application_enumerated(&apdu[0], units);
+		break;
+	case PROP_PRIORITY_ARRAY:
+		apdu_len = bacnet_array_encode(rpdata->object_instance,
+					       rpdata->array_index, Analog_Output_Priority_Array_Encode,
+					       BACNET_MAX_PRIORITY, apdu, apdu_size);
+		if (apdu_len == BACNET_STATUS_ABORT) {
+			rpdata->error_code =
+				ERROR_CODE_ABORT_SEGMENTATION_NOT_SUPPORTED;
+		} else if (apdu_len == BACNET_STATUS_ERROR) {
+			rpdata->error_class = ERROR_CLASS_PROPERTY;
+			rpdata->error_code = ERROR_CODE_INVALID_ARRAY_INDEX;
+		}
+		break;
+	case PROP_RELINQUISH_DEFAULT:
+		real_value =
+			Analog_Output_Relinquish_Default(rpdata->object_instance);
+		apdu_len = encode_application_real(&apdu[0], real_value);
+		break;
+	case PROP_DESCRIPTION:
+		characterstring_init_ansi(&char_string,
+					  Analog_Output_Description(rpdata->object_instance));
+		apdu_len =
+			encode_application_character_string(&apdu[0], &char_string);
+		break;
+	case PROP_COV_INCREMENT:
+		apdu_len = encode_application_real(
+						   &apdu[0], Analog_Output_COV_Increment(rpdata->object_instance));
+		break;
 #if (BACNET_PROTOCOL_REVISION >= 17)
-        case PROP_CURRENT_COMMAND_PRIORITY:
-            i = Analog_Output_Present_Value_Priority(rpdata->object_instance);
-            if ((i >= BACNET_MIN_PRIORITY) && (i <= BACNET_MAX_PRIORITY)) {
-                apdu_len = encode_application_unsigned(&apdu[0], i);
-            } else {
-                apdu_len = encode_application_null(&apdu[0]);
-            }
-            break;
+	case PROP_CURRENT_COMMAND_PRIORITY:
+		i = Analog_Output_Present_Value_Priority(rpdata->object_instance);
+		if ((i >= BACNET_MIN_PRIORITY) && (i <= BACNET_MAX_PRIORITY)) {
+			apdu_len = encode_application_unsigned(&apdu[0], i);
+		} else {
+			apdu_len = encode_application_null(&apdu[0]);
+		}
+		break;
 #endif
-        default:
-            rpdata->error_class = ERROR_CLASS_PROPERTY;
-            rpdata->error_code = ERROR_CODE_UNKNOWN_PROPERTY;
-            apdu_len = BACNET_STATUS_ERROR;
-            break;
-    }
-    /*  only array properties can have array options */
-    if ((apdu_len >= 0) && (rpdata->object_property != PROP_PRIORITY_ARRAY) &&
-        (rpdata->object_property != PROP_EVENT_TIME_STAMPS) &&
-        (rpdata->array_index != BACNET_ARRAY_ALL)) {
-        rpdata->error_class = ERROR_CLASS_PROPERTY;
-        rpdata->error_code = ERROR_CODE_PROPERTY_IS_NOT_AN_ARRAY;
-        apdu_len = BACNET_STATUS_ERROR;
-    }
+	default:
+		rpdata->error_class = ERROR_CLASS_PROPERTY;
+		rpdata->error_code = ERROR_CODE_UNKNOWN_PROPERTY;
+		apdu_len = BACNET_STATUS_ERROR;
+		break;
+	}
+	/*  only array properties can have array options */
+	if ((apdu_len >= 0) && (rpdata->object_property != PROP_PRIORITY_ARRAY) &&
+	    (rpdata->object_property != PROP_EVENT_TIME_STAMPS) &&
+	    (rpdata->array_index != BACNET_ARRAY_ALL)) {
+		rpdata->error_class = ERROR_CLASS_PROPERTY;
+		rpdata->error_code = ERROR_CODE_PROPERTY_IS_NOT_AN_ARRAY;
+		apdu_len = BACNET_STATUS_ERROR;
+	}
 
-    return apdu_len;
+	return apdu_len;
 }
 
 /**
@@ -1086,81 +1086,81 @@ int Analog_Output_Read_Property(BACNET_READ_PROPERTY_DATA *rpdata)
  */
 bool Analog_Output_Write_Property(BACNET_WRITE_PROPERTY_DATA *wp_data)
 {
-    bool status = false; /* return value */
-    int len = 0;
-    BACNET_APPLICATION_DATA_VALUE value;
+	bool status = false; /* return value */
+	int len = 0;
+	BACNET_APPLICATION_DATA_VALUE value;
 
-    /* decode the some of the request */
-    len = bacapp_decode_application_data(
-        wp_data->application_data, wp_data->application_data_len, &value);
-    /* FIXME: len < application_data_len: more data? */
-    if (len < 0) {
-        /* error while decoding - a value larger than we can handle */
-        wp_data->error_class = ERROR_CLASS_PROPERTY;
-        wp_data->error_code = ERROR_CODE_VALUE_OUT_OF_RANGE;
-        return false;
-    }
-    if ((wp_data->object_property != PROP_PRIORITY_ARRAY) &&
-        (wp_data->object_property != PROP_EVENT_TIME_STAMPS) &&
-        (wp_data->array_index != BACNET_ARRAY_ALL)) {
-        /*  only array properties can have array options */
-        wp_data->error_class = ERROR_CLASS_PROPERTY;
-        wp_data->error_code = ERROR_CODE_PROPERTY_IS_NOT_AN_ARRAY;
-        return false;
-    }
-    switch (wp_data->object_property) {
-        case PROP_PRESENT_VALUE:
-            status = write_property_type_valid(
-                wp_data, &value, BACNET_APPLICATION_TAG_REAL);
-            if (status) {
-                status =
-                    Analog_Output_Present_Value_Write(wp_data->object_instance,
-                        value.type.Real, wp_data->priority,
-                        &wp_data->error_class, &wp_data->error_code);
-            } else {
-                status = write_property_type_valid(
-                    wp_data, &value, BACNET_APPLICATION_TAG_NULL);
-                if (status) {
-                    status = Analog_Output_Present_Value_Relinquish_Write(
-                        wp_data->object_instance, wp_data->priority,
-                        &wp_data->error_class, &wp_data->error_code);
-                }
-            }
-            break;
-        case PROP_OUT_OF_SERVICE:
-            status = write_property_type_valid(
-                wp_data, &value, BACNET_APPLICATION_TAG_BOOLEAN);
-            if (status) {
-                Analog_Output_Out_Of_Service_Set(
-                    wp_data->object_instance, value.type.Boolean);
-            }
-            break;
-        case PROP_COV_INCREMENT:
-        case PROP_OBJECT_IDENTIFIER:
-        case PROP_OBJECT_TYPE:
-        case PROP_OBJECT_NAME:
-        case PROP_STATUS_FLAGS:
-        case PROP_EVENT_STATE:
-        case PROP_UNITS:
-        case PROP_RELIABILITY:
-        case PROP_PRIORITY_ARRAY:
-        case PROP_RELINQUISH_DEFAULT:
-        case PROP_MAX_PRES_VALUE:
-        case PROP_MIN_PRES_VALUE:
-        case PROP_DESCRIPTION:
+	/* decode the some of the request */
+	len = bacapp_decode_application_data(
+					     wp_data->application_data, wp_data->application_data_len, &value);
+	/* FIXME: len < application_data_len: more data? */
+	if (len < 0) {
+		/* error while decoding - a value larger than we can handle */
+		wp_data->error_class = ERROR_CLASS_PROPERTY;
+		wp_data->error_code = ERROR_CODE_VALUE_OUT_OF_RANGE;
+		return false;
+	}
+	if ((wp_data->object_property != PROP_PRIORITY_ARRAY) &&
+	    (wp_data->object_property != PROP_EVENT_TIME_STAMPS) &&
+	    (wp_data->array_index != BACNET_ARRAY_ALL)) {
+		/*  only array properties can have array options */
+		wp_data->error_class = ERROR_CLASS_PROPERTY;
+		wp_data->error_code = ERROR_CODE_PROPERTY_IS_NOT_AN_ARRAY;
+		return false;
+	}
+	switch (wp_data->object_property) {
+	case PROP_PRESENT_VALUE:
+		status = write_property_type_valid(
+						   wp_data, &value, BACNET_APPLICATION_TAG_REAL);
+		if (status) {
+			status =
+				Analog_Output_Present_Value_Write(wp_data->object_instance,
+								  value.type.Real, wp_data->priority,
+								  &wp_data->error_class, &wp_data->error_code);
+		} else {
+			status = write_property_type_valid(
+							   wp_data, &value, BACNET_APPLICATION_TAG_NULL);
+			if (status) {
+				status = Analog_Output_Present_Value_Relinquish_Write(
+										      wp_data->object_instance, wp_data->priority,
+										      &wp_data->error_class, &wp_data->error_code);
+			}
+		}
+		break;
+	case PROP_OUT_OF_SERVICE:
+		status = write_property_type_valid(
+						   wp_data, &value, BACNET_APPLICATION_TAG_BOOLEAN);
+		if (status) {
+			Analog_Output_Out_Of_Service_Set(
+							 wp_data->object_instance, value.type.Boolean);
+		}
+		break;
+	case PROP_COV_INCREMENT:
+	case PROP_OBJECT_IDENTIFIER:
+	case PROP_OBJECT_TYPE:
+	case PROP_OBJECT_NAME:
+	case PROP_STATUS_FLAGS:
+	case PROP_EVENT_STATE:
+	case PROP_UNITS:
+	case PROP_RELIABILITY:
+	case PROP_PRIORITY_ARRAY:
+	case PROP_RELINQUISH_DEFAULT:
+	case PROP_MAX_PRES_VALUE:
+	case PROP_MIN_PRES_VALUE:
+	case PROP_DESCRIPTION:
 #if (BACNET_PROTOCOL_REVISION >= 17)
-        case PROP_CURRENT_COMMAND_PRIORITY:
+	case PROP_CURRENT_COMMAND_PRIORITY:
 #endif
-            wp_data->error_class = ERROR_CLASS_PROPERTY;
-            wp_data->error_code = ERROR_CODE_WRITE_ACCESS_DENIED;
-            break;
-        default:
-            wp_data->error_class = ERROR_CLASS_PROPERTY;
-            wp_data->error_code = ERROR_CODE_UNKNOWN_PROPERTY;
-            break;
-    }
+		wp_data->error_class = ERROR_CLASS_PROPERTY;
+		wp_data->error_code = ERROR_CODE_WRITE_ACCESS_DENIED;
+		break;
+	default:
+		wp_data->error_class = ERROR_CLASS_PROPERTY;
+		wp_data->error_code = ERROR_CODE_UNKNOWN_PROPERTY;
+		break;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -1168,9 +1168,9 @@ bool Analog_Output_Write_Property(BACNET_WRITE_PROPERTY_DATA *wp_data)
  * @param cb - callback used to provide indications
  */
 void Analog_Output_Write_Present_Value_Callback_Set(
-    analog_output_write_present_value_callback cb)
+						    analog_output_write_present_value_callback cb)
 {
-    Analog_Output_Write_Present_Value_Callback = cb;
+	Analog_Output_Write_Present_Value_Callback = cb;
 }
 
 /**
@@ -1180,51 +1180,51 @@ void Analog_Output_Write_Present_Value_Callback_Set(
  */
 uint32_t Analog_Output_Create(uint32_t object_instance)
 {
-    struct object_data *pObject = NULL;
-    int index = 0;
-    unsigned priority = 0;
+	struct object_data *pObject = NULL;
+	int index = 0;
+	unsigned priority = 0;
 
-    if (object_instance > BACNET_MAX_INSTANCE) {
-        return BACNET_MAX_INSTANCE;
-    } else if (object_instance == BACNET_MAX_INSTANCE) {
-        /* wildcard instance */
-        /* the Object_Identifier property of the newly created object
-            shall be initialized to a value that is unique within the
-            responding BACnet-user device. The method used to generate
-            the object identifier is a local matter.*/
-        object_instance = Keylist_Next_Empty_Key(Object_List, 1);
-    }
-    pObject = Keylist_Data(Object_List, object_instance);
-    if (!pObject) {
-        pObject = calloc(1, sizeof(struct object_data));
-        if (pObject) {
-            pObject->Object_Name = NULL;
-            pObject->Reliability = RELIABILITY_NO_FAULT_DETECTED;
-            pObject->Overridden = false;
-            for (priority = 0; priority < BACNET_MAX_PRIORITY; priority++) {
-                pObject->Relinquished[priority] = true;
-                pObject->Priority_Array[priority] = 0.0;
-            }
-            pObject->Relinquish_Default = 0.0;
-            pObject->COV_Increment = 1.0;
-            pObject->Prior_Value = 0.0;
-            pObject->Units = UNITS_NO_UNITS;
-            pObject->Out_Of_Service = false;
-            pObject->Changed = false;
-            pObject->Min_Pres_Value = 0;
-            pObject->Max_Pres_Value = 100;
-            /* add to list */
-            index = Keylist_Data_Add(Object_List, object_instance, pObject);
-            if (index < 0) {
-                free(pObject);
-                return BACNET_MAX_INSTANCE;
-            }
-        } else {
-            return BACNET_MAX_INSTANCE;
-        }
-    }
+	if (object_instance > BACNET_MAX_INSTANCE) {
+		return BACNET_MAX_INSTANCE;
+	} else if (object_instance == BACNET_MAX_INSTANCE) {
+		/* wildcard instance */
+		/* the Object_Identifier property of the newly created object
+		   shall be initialized to a value that is unique within the
+		   responding BACnet-user device. The method used to generate
+		   the object identifier is a local matter.*/
+		object_instance = Keylist_Next_Empty_Key(Object_List, 1);
+	}
+	pObject = Keylist_Data(Object_List, object_instance);
+	if (!pObject) {
+		pObject = calloc(1, sizeof(struct object_data));
+		if (pObject) {
+			pObject->Object_Name = NULL;
+			pObject->Reliability = RELIABILITY_NO_FAULT_DETECTED;
+			pObject->Overridden = false;
+			for (priority = 0; priority < BACNET_MAX_PRIORITY; priority++) {
+				pObject->Relinquished[priority] = true;
+				pObject->Priority_Array[priority] = 0.0;
+			}
+			pObject->Relinquish_Default = 0.0;
+			pObject->COV_Increment = 1.0;
+			pObject->Prior_Value = 0.0;
+			pObject->Units = UNITS_NO_UNITS;
+			pObject->Out_Of_Service = false;
+			pObject->Changed = false;
+			pObject->Min_Pres_Value = 0;
+			pObject->Max_Pres_Value = 100;
+			/* add to list */
+			index = Keylist_Data_Add(Object_List, object_instance, pObject);
+			if (index < 0) {
+				free(pObject);
+				return BACNET_MAX_INSTANCE;
+			}
+		} else {
+			return BACNET_MAX_INSTANCE;
+		}
+	}
 
-    return object_instance;
+	return object_instance;
 }
 
 /**
@@ -1234,16 +1234,16 @@ uint32_t Analog_Output_Create(uint32_t object_instance)
  */
 bool Analog_Output_Delete(uint32_t object_instance)
 {
-    bool status = false;
-    struct object_data *pObject = NULL;
+	bool status = false;
+	struct object_data *pObject = NULL;
 
-    pObject = Keylist_Data_Delete(Object_List, object_instance);
-    if (pObject) {
-        free(pObject);
-        status = true;
-    }
+	pObject = Keylist_Data_Delete(Object_List, object_instance);
+	if (pObject) {
+		free(pObject);
+		status = true;
+	}
 
-    return status;
+	return status;
 }
 
 /**
@@ -1251,18 +1251,18 @@ bool Analog_Output_Delete(uint32_t object_instance)
  */
 void Analog_Output_Cleanup(void)
 {
-    struct object_data *pObject;
+	struct object_data *pObject;
 
-    if (Object_List) {
-        do {
-            pObject = Keylist_Data_Pop(Object_List);
-            if (pObject) {
-                free(pObject);
-            }
-        } while (pObject);
-        Keylist_Delete(Object_List);
-        Object_List = NULL;
-    }
+	if (Object_List) {
+		do {
+			pObject = Keylist_Data_Pop(Object_List);
+			if (pObject) {
+				free(pObject);
+			}
+		} while (pObject);
+		Keylist_Delete(Object_List);
+		Object_List = NULL;
+	}
 }
 
 /**
@@ -1270,5 +1270,9 @@ void Analog_Output_Cleanup(void)
  */
 void Analog_Output_Init(void)
 {
-    Object_List = Keylist_Create();
+	char index = 1;
+	Object_List = Keylist_Create();
+	for (; index < 4; index++) {
+		Analog_Output_Create(index);
+	}
 }

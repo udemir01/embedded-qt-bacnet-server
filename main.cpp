@@ -24,7 +24,7 @@
  *********************************************************************/
 #include <QApplication>
 
-#include "mainwindow.h"
+#include "bacnetwidget.h"
 
 /** Main function of server demo.
  *
@@ -41,7 +41,7 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
-	MainWindow w;
+	BacnetWidget w;
 	w.show();
 	return a.exec();
 }
