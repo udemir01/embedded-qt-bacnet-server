@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>BacnetWidget</class>
- <widget class="QWidget" name="BacnetWidget">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>BacnetWidget</string>
+   <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="">
    <property name="geometry">

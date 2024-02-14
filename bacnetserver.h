@@ -1,7 +1,7 @@
-#ifndef BACNETWIDGET_H
-#define BACNETWIDGET_H
+#ifndef BACNETSERVER_H
+#define BACNETSERVER_H
 
-#include <QWidget>
+#include <QThread>
 #include <stddef.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -160,44 +160,10 @@ review by all interested parties. Say 6 months -> September 2016 */
 #endif
 }
 
-static void print_usage(const char *filename)
+class BacnetServer: public QThread
 {
-	printf("Usage: %s [device-instance [device-name]]\n", filename);
-	printf("       [--version][--help]\n");
-}
-
-static void print_help(const char *filename)
-{
-	printf("Simulate a BACnet server device\n"
-	       "device-instance:\n"
-	       "BACnet Device Object Instance number that you are\n"
-	       "trying simulate.\n"
-	       "device-name:\n"
-	       "The Device object-name is the text name for the device.\n"
-	       "\nExample:\n");
-	printf("To simulate Device 123, use the following command:\n"
-	       "%s 123\n",
-	       filename);
-	printf("To simulate Device 123 named Fred, use following command:\n"
-	       "%s 123 Fred\n",
-	       filename);
-}
-
-QT_BEGIN_NAMESPACE
-namespace Ui {
-class BacnetWidget;
-}
-QT_END_NAMESPACE
-
-class BacnetWidget: public QWidget
-{
-    Q_OBJECT
-
 public:
-    BacnetWidget(QWidget *parent = nullptr);
-    ~BacnetWidget();
-
-private:
-    Ui::BacnetWidget *ui;
+	void run();
 };
-#endif // BACNETWIDGET_H
+
+#endif
