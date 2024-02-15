@@ -105,6 +105,7 @@ static object_functions_t My_Object_Table[] = {
         NULL /* Intrinsic Reporting */, NULL /* Add_List_Element */,
         NULL /* Remove_List_Element */, NULL /* Create */, NULL /* Delete */,
         NULL /* Timer */ },
+#if 0
 #if (BACNET_PROTOCOL_REVISION >= 17)
     { OBJECT_NETWORK_PORT, Network_Port_Init, Network_Port_Count,
         Network_Port_Index_To_Instance, Network_Port_Valid_Instance,
@@ -124,6 +125,7 @@ static object_functions_t My_Object_Table[] = {
         Analog_Input_Change_Of_Value_Clear, Analog_Input_Intrinsic_Reporting,
         NULL /* Add_List_Element */, NULL /* Remove_List_Element */,
         NULL /* Create */, NULL /* Delete */, NULL /* Timer */ },
+#endif
     { OBJECT_ANALOG_OUTPUT, Analog_Output_Init, Analog_Output_Count,
         Analog_Output_Index_To_Instance, Analog_Output_Valid_Instance,
         Analog_Output_Object_Name, Analog_Output_Read_Property,
@@ -132,6 +134,7 @@ static object_functions_t My_Object_Table[] = {
         NULL /* COV */, NULL /* COV Clear */, NULL /* Intrinsic Reporting */,
         NULL /* Add_List_Element */, NULL /* Remove_List_Element */,
         Analog_Output_Create, Analog_Output_Delete, NULL /* Timer */ },
+#if 0
     { OBJECT_ANALOG_VALUE, Analog_Value_Init, Analog_Value_Count,
         Analog_Value_Index_To_Instance, Analog_Value_Valid_Instance,
         Analog_Value_Object_Name, Analog_Value_Read_Property,
@@ -150,6 +153,7 @@ static object_functions_t My_Object_Table[] = {
         Binary_Input_Change_Of_Value_Clear, NULL /* Intrinsic Reporting */,
         NULL /* Add_List_Element */, NULL /* Remove_List_Element */,
         NULL /* Create */, NULL /* Delete */, NULL /* Timer */ },
+#endif
     { OBJECT_BINARY_OUTPUT, Binary_Output_Init, Binary_Output_Count,
         Binary_Output_Index_To_Instance, Binary_Output_Valid_Instance,
         Binary_Output_Object_Name, Binary_Output_Read_Property,
@@ -158,6 +162,7 @@ static object_functions_t My_Object_Table[] = {
         NULL /* COV */, NULL /* COV Clear */, NULL /* Intrinsic Reporting */,
         NULL /* Add_List_Element */, NULL /* Remove_List_Element */,
         Binary_Output_Create, Binary_Output_Delete, NULL /* Timer */ },
+#if 0
     { OBJECT_BINARY_VALUE, Binary_Value_Init, Binary_Value_Count,
         Binary_Value_Index_To_Instance, Binary_Value_Valid_Instance,
         Binary_Value_Object_Name, Binary_Value_Read_Property,
@@ -371,6 +376,7 @@ static object_functions_t My_Object_Table[] = {
         NULL /* COV */, NULL /* COV Clear */, NULL /* Intrinsic Reporting */,
         NULL /* Add_List_Element */, NULL /* Remove_List_Element */,
         NULL /* Create */, NULL /* Delete */, NULL /* Timer */ },
+#endif
 };
 
 /** Glue function to let the Device object, when called by a handler,
