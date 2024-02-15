@@ -1,11 +1,5 @@
 .cache/
+build/
 *.json@
 *.json
 *.user
-ui*
-moc*
-*.o
-.qmake.stash
-Makefile
-qt-bacserv-linux
-qt-bacserv-sigmastar

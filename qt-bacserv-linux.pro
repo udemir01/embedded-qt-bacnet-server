@@ -37,42 +37,42 @@ QMAKE_CFLAGS += \
 QMAKE_LFLAGS = -Wl,-lc,-lgcc,-lrt,-lm,--gc-sections
 QMAKE_PFLAGS = -pthread
 
-INCLUDEPATH += "./src/"
-INCLUDEPATH += "./src/bacnet/"
-INCLUDEPATH += "./src/bacnet/service"
+INCLUDEPATH += $$PWD/src/
+INCLUDEPATH += $$PWD/src/bacnet/
+INCLUDEPATH += $$PWD/src/bacnet/service
 
 SOURCES += \
 main.cpp \
 mainwindow.cpp \
 bacnetserver.cpp \
-"./src/bacnet/*.c" \
-"./src/bacnet/basic/npdu/*.c" \
-"./src/bacnet/datalink/*.c" \
-"./src/bacnet/basic/object/*.c" \
-"./src/bacnet/basic/service/*.c" \
-"./src/bacnet/basic/tsm/*.c" \
-"./src/bacnet/basic/bbmd/*.c" \
-"./src/bacnet/basic/bbmd6/*.c" \
-"./src/bacnet/basic/binding/*.c" \
-"./src/bacnet/basic/client/*.c" \
-"./src/bacnet/basic/sys/*.c" \
-"./ports/linux/*-init.c" \
+$$PWD/src/bacnet/*.c \
+$$PWD/src/bacnet/basic/npdu/*.c \
+$$PWD/src/bacnet/datalink/*.c \
+$$PWD/src/bacnet/basic/object/*.c \
+$$PWD/src/bacnet/basic/service/*.c \
+$$PWD/src/bacnet/basic/tsm/*.c \
+$$PWD/src/bacnet/basic/bbmd/*.c \
+$$PWD/src/bacnet/basic/bbmd6/*.c \
+$$PWD/src/bacnet/basic/binding/*.c \
+$$PWD/src/bacnet/basic/client/*.c \
+$$PWD/src/bacnet/basic/sys/*.c \
+$$PWD/ports/linux/*-init.c \
 
 HEADERS += \
 mainwindow.h \
 bacnetserver.h \
-"./src/bacnet/*.h" \
-"./src/bacnet/basic/npdu/*.h" \
-"./src/bacnet/basic/services.h" \
-"./src/bacnet/datalink/*.h" \
-"./src/bacnet/basic/object/*.h" \
-"./src/bacnet/basic/service/*.h" \
-"./src/bacnet/basic/tsm/*.h" \
-"./src/bacnet/basic/bbmd/*.h" \
-"./src/bacnet/basic/bbmd6/*.h" \
-"./src/bacnet/basic/binding/*.h" \
-"./src/bacnet/basic/client/*.h" \
-"./src/bacnet/basic/sys/*.h" \
+$$PWD/src/bacnet/*.h \
+$$PWD/src/bacnet/basic/npdu/*.h \
+$$PWD/src/bacnet/basic/services.h \
+$$PWD/src/bacnet/datalink/*.h \
+$$PWD/src/bacnet/basic/object/*.h \
+$$PWD/src/bacnet/basic/service/*.h \
+$$PWD/src/bacnet/basic/tsm/*.h \
+$$PWD/src/bacnet/basic/bbmd/*.h \
+$$PWD/src/bacnet/basic/bbmd6/*.h \
+$$PWD/src/bacnet/basic/binding/*.h \
+$$PWD/src/bacnet/basic/client/*.h \
+$$PWD/src/bacnet/basic/sys/*.h \
 
 FORMS += \
 mainwindow.ui

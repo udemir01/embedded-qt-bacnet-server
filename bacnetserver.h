@@ -26,6 +26,7 @@
 #include "bacnet/basic/tsm/tsm.h"
 #include "bacnet/datalink/datalink.h"
 #include "bacnet/basic/binding/address.h"
+
 /* include the device object */
 #include "bacnet/basic/object/device.h"
 /* objects that have tasks inside them */
@@ -47,6 +48,7 @@
 #if defined(BAC_UCI)
 #include "bacnet/basic/ucix/ucix.h"
 #endif /* defined(BAC_UCI) */
+
 #include "bacnet/basic/object/ao.h"
 #include "bacnet/basic/object/bo.h"
 
@@ -81,8 +83,10 @@ static void Init_Service_Handlers(void)
 {
 	Device_Init(NULL);
 	/* we need to handle who-is to support dynamic device binding */
-	apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_WHO_IS, handler_who_is);
-	apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_WHO_HAS, handler_who_has);
+	apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_WHO_IS,
+				     handler_who_is);
+	apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_WHO_HAS,
+				     handler_who_has);
 
 #if 0
 	/* 	BACnet Testing Observed Incident oi00107
@@ -103,58 +107,62 @@ review by all interested parties. Say 6 months -> September 2016 */
 	apdu_set_unrecognized_service_handler_handler(handler_unrecognized_service);
 	/* Set the handlers for any confirmed services that we support. */
 	/* We must implement read property - it's required! */
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_READ_PROPERTY, handler_read_property);
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_READ_PROP_MULTIPLE, handler_read_property_multiple);
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_WRITE_PROPERTY, handler_write_property);
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_WRITE_PROP_MULTIPLE, handler_write_property_multiple);
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_READ_RANGE, handler_read_range);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_READ_PROPERTY,
+				   handler_read_property);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_READ_PROP_MULTIPLE,
+				   handler_read_property_multiple);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_WRITE_PROPERTY,
+				   handler_write_property);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_WRITE_PROP_MULTIPLE,
+				   handler_write_property_multiple);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_READ_RANGE,
+				   handler_read_range);
 #if defined(BACFILE)
 	apdu_set_confirmed_handler(
 				   SERVICE_CONFIRMED_ATOMIC_READ_FILE, handler_atomic_read_file);
 	apdu_set_confirmed_handler(
 				   SERVICE_CONFIRMED_ATOMIC_WRITE_FILE, handler_atomic_write_file);
 #endif
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_REINITIALIZE_DEVICE, handler_reinitialize_device);
-	apdu_set_unconfirmed_handler(
-				     SERVICE_UNCONFIRMED_UTC_TIME_SYNCHRONIZATION, handler_timesync_utc);
-	apdu_set_unconfirmed_handler(
-				     SERVICE_UNCONFIRMED_TIME_SYNCHRONIZATION, handler_timesync);
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_SUBSCRIBE_COV, handler_cov_subscribe);
-	apdu_set_unconfirmed_handler(
-				     SERVICE_UNCONFIRMED_COV_NOTIFICATION, handler_ucov_notification);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_REINITIALIZE_DEVICE,
+				   handler_reinitialize_device);
+	apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_UTC_TIME_SYNCHRONIZATION,
+				     handler_timesync_utc);
+	apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_TIME_SYNCHRONIZATION,
+				     handler_timesync);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_SUBSCRIBE_COV,
+				   handler_cov_subscribe);
+	apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_COV_NOTIFICATION,
+				     handler_ucov_notification);
 	/* handle communication so we can shutup when asked */
 	apdu_set_confirmed_handler(SERVICE_CONFIRMED_DEVICE_COMMUNICATION_CONTROL,
 				   handler_device_communication_control);
 	/* handle the data coming back from private requests */
 	apdu_set_unconfirmed_handler(SERVICE_UNCONFIRMED_PRIVATE_TRANSFER,
 				     handler_unconfirmed_private_transfer);
+
 #if defined(INTRINSIC_REPORTING)
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_ACKNOWLEDGE_ALARM, handler_alarm_ack);
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_GET_EVENT_INFORMATION, handler_get_event_information);
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_GET_ALARM_SUMMARY, handler_get_alarm_summary);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_ACKNOWLEDGE_ALARM,
+				   handler_alarm_ack);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_GET_EVENT_INFORMATION,
+				   handler_get_event_information);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_GET_ALARM_SUMMARY,
+				   handler_get_alarm_summary);
 #endif /* defined(INTRINSIC_REPORTING) */
+
 #if defined(BACNET_TIME_MASTER)
 	handler_timesync_init();
 #endif
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_CREATE_OBJECT, handler_create_object);
-	apdu_set_confirmed_handler(
-				   SERVICE_CONFIRMED_DELETE_OBJECT, handler_delete_object);
+
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_CREATE_OBJECT,
+				   handler_create_object);
+	apdu_set_confirmed_handler(SERVICE_CONFIRMED_DELETE_OBJECT,
+				   handler_delete_object);
 	/* configure the cyclic timers */
 	mstimer_set(&BACnet_Task_Timer, 1000UL);
 	mstimer_set(&BACnet_TSM_Timer, 50UL);
 	mstimer_set(&BACnet_Address_Timer, 60UL*1000UL);
 	mstimer_set(&BACnet_Object_Timer, 100UL);
+
 #if defined(INTRINSIC_REPORTING)
 	mstimer_set(&BACnet_Notification_Timer, NC_RESCAN_RECIPIENTS_SECS*1000UL);
 #endif

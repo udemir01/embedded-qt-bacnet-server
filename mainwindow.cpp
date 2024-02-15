@@ -6,13 +6,13 @@ MainWindow::MainWindow(QWidget *parent)
 	, ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
+
 	BacnetServer *server = new BacnetServer();
 	server->start();
 
 	QTimer *timer = new QTimer;
 	connect(timer, SIGNAL(timeout()), this, SLOT(update()));
-	timer->start(5000);
-
+	timer->start(100);
 }
 
 void MainWindow::update()
